@@ -54,10 +54,40 @@ def print_values():
 
 #função responsável por exibir o subgrafo de menor caminho
 def show_shortest_path_graph(path):
+  path_id = []
+
+  #convertendo lista de nós pela label, para lista de nós pelo id
+  for node_path in path:
+    for node in nodes:
+      if node["label"] == node_path:
+        path_id.append(node["id"])
+        break
+  
+  #cria um grafo vazio
+  subgraph = nx.DiGraph()
+
+  #adicionando vertices
+  for node in path:
+    subgraph.add_node(node)
+
+  #loop responsável por percorrer dtodos os nós do menor caminho
+  for i in range(len(path_id)):
+    #para o loop no ultimo nó
+    if i == len(path_id) - 1:
+      break
+    
+    #loop responsável por adicionar as arestas ao subgrafo
+    for edge in edges:
+      if edge['source'] == path_id[i] and edge['target'] == path_id[i + 1]:
+        add_edge(subgraph, path[i], path[i + 1],edge['weight'])
+        break
+
+  #plotando o subgrafo
   plt.title("Grafo do menor caminho")
-  pos = nx.spring_layout(G)
-  subgraph = G.subgraph(path)
-  nx.draw_networkx(subgraph, pos=pos, node_color = 'red')
+  pos = nx.spring_layout(subgraph)
+  nx.draw_networkx(subgraph, pos=pos, node_color='red')
+  labels = nx.get_edge_attributes(subgraph, 'weight')
+  nx.draw_networkx_edge_labels(subgraph, pos=pos, edge_labels=labels)
   plt.show()
 
 #recebendo as informações dos nós e arestas da base de dados
