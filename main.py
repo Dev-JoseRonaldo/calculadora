@@ -11,16 +11,16 @@ def add_edge(G, u, v, w=1):
 #função responsável por plotar o grao principal com todos os nós e aretas inseridos
 def plot_main_graph():
   plt.title("Grafo completo")
-  nx.draw_networkx(G, pos=nx.spring_layout(G), with_labels=True)
+  nx.draw_networkx(G, pos=nx.spring_layout(G), with_labels=True, node_size=500)
   plt.show()
 
 #função responsável por exibir os outputs da consulta em tela, de acordo com os inputs fornecidos
 def print_values():
   text_shortest_path['text'] = ''
+  text1_canvas = canvas.create_window(510, 450, anchor = "center", window = text_shortest_path)
 
   v_source = v_source_field.get()
   v_target = v_target_field.get()
-
   #caso há campos vazios, imprime mensagem de erro
   if v_source == '' or v_target == '':
     text_shortest_path['text'] = 'Por favor preencha todos os campos'
@@ -40,17 +40,26 @@ def print_values():
     string_shortest_path = " -> ".join(shortest_path)
 
     #texto do menor caminho
-    text_shortest_path['text'] = f'''
-      Menor caminho: {string_shortest_path}
+    text_shortest_path['text'] = f'''Menor caminho: {string_shortest_path}
       Peso menor caminho: {weight_shortest_path}'''
 
+
+
     #botão que exibe o subgrafo 
-    btn_show_subgraph = Button(text="exibir grafo menor caminho", width=26, command=lambda: show_shortest_path_graph(shortest_path))
-    btn_show_subgraph.grid(row=8, column=1, columnspan=2)
+    btn_show_subgraph = Button(window,
+                            text="exibir grafo menor caminho", 
+                            command=lambda: show_shortest_path_graph(shortest_path),
+                            font=('Times New Roman CE', 12, 'bold'), 
+                            bg="white", 
+                            foreground="black", 
+                            activebackground="#001F48", 
+                            activeforeground="white")
+
+    btn_show_subgraph_canvas = canvas.create_window(375, 480, anchor = "nw", window = btn_show_subgraph)
 
   #caso informe alguma entrada inválida   
   except:
-    text_shortest_path['text'] = 'Entradas inválidas'
+    text_shortest_path['text'] = f'Nenhum caminho encontrado entre "{v_source}" e "{v_target}"'
 
 #função responsável por exibir o subgrafo de menor caminho
 def show_shortest_path_graph(path):
@@ -85,7 +94,7 @@ def show_shortest_path_graph(path):
   #plotando o subgrafo
   plt.title("Grafo do menor caminho")
   pos = nx.spring_layout(subgraph)
-  nx.draw_networkx(subgraph, pos=pos, node_color='red')
+  nx.draw_networkx(subgraph, pos=pos, node_color='red', node_size=800, font_color="white", font_weight="bold")
   labels = nx.get_edge_attributes(subgraph, 'weight')
   nx.draw_networkx_edge_labels(subgraph, pos=pos, edge_labels=labels)
   plt.show()
@@ -123,50 +132,65 @@ for edge in edges:
   if source_node and target_node:
     add_edge(G, str(source_node['label']),str(target_node['label']),edge['weight'])
 
-
 #criando a interface
 window = Tk()
-window.title("algoritmos e estrutura de dados")
-window.geometry("800x800")
-window.config(padx=175, pady=10)
+window.title("Projeto de algoritmos e estrutura de dados")
+window.geometry("1000x687")
 window.resizable(0, 0)
 
 #criando a figura do grafo
 plt.figure(1)
 
-#título da interface
-title_text = Label(window, text="Trabalho algoritmos e estrutura de dados")
-title_text.grid(column=1, row=0, padx=10, pady=10)
+# Add image file
+bg = PhotoImage(file = "image/bg.png")
+  
+# Create Canvas
+canvas = Canvas(window, width = 1000, height = 687)
+canvas.pack(fill = "both", expand = True)
+  
+# Display image
+canvas.create_image( 0, 0, image = bg, anchor = "nw")
 
 #botão da interface que exibe o grafo principal
-btn_view_main_graph = Button(window, text="Plotar Grafo Completo", command=plot_main_graph)
-btn_view_main_graph.grid(column=1, row=1, padx=10, pady=10)
-
-#texto da interface
-title_text = Label(window, text="Encontre a menor distancia entre dois vértices")
-title_text.grid(column=1, row=3, padx=10, pady=20)
+btn_view_main_graph = Button(window, 
+                             text="Plotar Grafo Completo", 
+                             command=plot_main_graph, 
+                             font=('Times New Roman CE', 12, 'bold'), 
+                             bg="white", 
+                             foreground="black", 
+                             activebackground="#001F48", 
+                             activeforeground="white")
 
 #input da interface: vértice inicial
-v_source_label = Label(text="Vertice inicial:")
-v_source_label.grid(row=4, column=0, pady=1)
-v_source_field = Entry(width=30)
-v_source_field.grid(row=4, column=1, pady=1)
+v_source_field = Entry(width=5)
 v_source_field.focus()
 
 #input da interface: vértice destino
-v_target_label = Label(text="Vertice destino:")
-v_target_label.grid(row=5, column=0, pady=1)
-v_target_field = Entry(width=30)
-v_target_field.grid(row=5, column=1, pady=1)
-v_target_field.focus()
+v_target_field = Entry(width=5)
 
-#botão da interface: vértice destino
-btn_calc_shortest_path = Button(text="Calcular menor caminho", width=26, command=print_values)
-btn_calc_shortest_path.grid(row=6, column=1, pady=5)
+#botão da interface: calcular menor caminho
+btn_calc_shortest_path = Button(window,
+                                text="Calcular menor caminho", 
+                                command=print_values, 
+                                font=('Times New Roman CE', 12, 'bold'), 
+                                bg="white", 
+                                foreground="black", 
+                                activebackground="#001F48", 
+                                activeforeground="white")
 
-#texto da interface: vértice destino
+#texto da interface: resultado menor caminho
 text_shortest_path = Label(window, text="")
-text_shortest_path.grid(column=1, row=7, padx=10, pady=10)
+
+#renderizando elementos no canvas
+canvas.create_text( 530, 80, text = "Rede Neural do Caenorhabditis Elegans", fill='white', font=('Times New Roman CE', 22, 'bold'))
+canvas.create_text( 520, 150, text = "Visualize o grafo completo:", fill='white', font=('', 14))
+canvas.create_text( 520, 260, text = "Encontre o menor caminho entre dois neurônios na rede neural:", fill='white', font=('Times New Roman CE', 16))
+canvas.create_text( 480, 301, text = "Neurônio Inicial:", fill='white', font=('Times New Roman CE', 14))
+canvas.create_text( 475, 331, text = "Neurônio Final:", fill='white', font=('Times New Roman CE', 14))
+btn_view_main_graph_canva = canvas.create_window(400, 175, anchor = "nw", window = btn_view_main_graph)
+btn_calc_shortest_path_canva = canvas.create_window(390, 380, anchor = "nw", window = btn_calc_shortest_path)
+v_source_field_canva = canvas.create_window(570, 290, anchor = "nw", window = v_source_field)
+v_target_field_canva = canvas.create_window(570, 320, anchor = "nw", window = v_target_field)
 
 #manter interface
 window.mainloop()
