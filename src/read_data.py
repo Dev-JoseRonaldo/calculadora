@@ -73,5 +73,3 @@ def get_nodes_and_edges():
 
     #retorna a lista com informações dos nós e arestas   
     return [json_nodes, json_edges]
-
-print(get_nodes_and_edges())
