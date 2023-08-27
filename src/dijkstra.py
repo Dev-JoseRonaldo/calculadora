@@ -1,5 +1,5 @@
 import sys
-import read_data
+import src.read_data as read_data
 
 #classe responsável por representar um grafo
 class Graph(object):
@@ -14,11 +14,6 @@ class Graph(object):
             graph[node] = {}
         
         graph.update(init_graph)
-        
-        for node, edges in graph.items():
-            for adjacent_node, value in edges.items():
-                if graph[adjacent_node].get(node, False) == False:
-                    graph[adjacent_node][node] = value
                     
         return graph
     
@@ -143,5 +138,3 @@ def show_min_path(start_node, target_node):
     result = print_result(previous_nodes, shortest_path, start_node=start_node, target_node=target_node)
 
     return result
-
-show_min_path('32','45')
